@@ -1,0 +1,4 @@
+colin_frei_openbadges_podcast:
+    resource: "@ColinFreiOpenBadgesPodcastBundle/Resources/config/routing.xml"
+    prefix:   /
+
