@@ -36,7 +36,7 @@ class SpiderCommand extends Command
     {
         $this
             ->setName('colinfrei:openbadgespodcast:spider')
-            ->setDescription('Check for new calls to add to database')
+            ->setDescription('Check for new call recordings to add to database')
         ;
     }
 
@@ -44,7 +44,7 @@ class SpiderCommand extends Command
     {
         $podcastItems = $this->entityManager->getRepository('ColinFreiOpenBadgesPodcastBundle:PodcastItem')->findAll();
 
-        $searchPage = $this->buzz->get('https://archive.org/search.php?query=subject%3A%22openbadges%22');
+        $searchPage = $this->buzz->get($this->archiveOrgBase . '/search.php?query=subject%3A%22openbadges%22');
         $crawler = new Crawler($searchPage->getContent());
 
         $links = $crawler->filter('a.titleLink');
