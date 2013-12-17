@@ -21,19 +21,19 @@ class Version20131210210910 extends AbstractMigration
 
         $this->addSql("
             INSERT INTO podcast (id, title, description)
-            VALUES ('obi_ogg', 'Open Badges Community Call (Ogg Vorbis)', 'TODO')
+            VALUES ('obi_ogg', 'Open Badges Community Call (Ogg Vorbis)', 'Recording of the weekly Open Badges community call')
         ");
         $this->addSql("
             INSERT INTO podcast (id, title, description)
-            VALUES ('obi_mp3', 'Open Badges Community Call (MP3)', 'TODO')
+            VALUES ('obi_mp3', 'Open Badges Community Call (MP3)', 'Recording of the weekly Open Badges community call')
         ");
         $this->addSql("
             INSERT INTO podcast (id, title, description)
-            VALUES ('rsd_ogg', 'Open Badges Research & System Design Call (Ogg Vorbis)', 'TODO')
+            VALUES ('rsd_ogg', 'Open Badges Research & System Design Call (Ogg Vorbis)', 'Recording of the weekly Open Badges research and system design call')
         ");
         $this->addSql("
             INSERT INTO podcast (id, title, description)
-            VALUES ('rsd_mp3', 'Open Badges Research & System Design Call (MP3)', 'TODO')
+            VALUES ('rsd_mp3', 'Open Badges Research & System Design Call (MP3)', 'Recording of the weekly Open Badges research and system design call')
         ");
     }
 
