@@ -35,6 +35,7 @@ class Podcast
 
     /**
      * @ORM\OneToMany(targetEntity="PodcastItem", mappedBy="podcast")
+     * @ORM\OrderBy({"date"="desc"})
      * @Serializer\Inline
      * @Serializer\XmlList(entry="item")
      */
