@@ -2,6 +2,7 @@
 
 namespace ColinFrei\OpenBadgesPodcastBundle\Controller;
 
+use ColinFrei\OpenBadgesPodcastBundle\Entity\PodcastRepository;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -12,14 +13,13 @@ class DefaultController extends Controller
 {
     public function indexAction()
     {
-        return $this->render('ColinFreiOpenBadgesPodcastBundle:Default:index.html.twig');
+        $podcasts = $this->getPodcastRepo()->findAll();
+        return $this->render('ColinFreiOpenBadgesPodcastBundle:Default:index.html.twig', array('podcasts' => $podcasts));
     }
 
     public function feedAction($id)
     {
-        $podcastRepo = $this->get('doctrine.orm.entity_manager')->getRepository('ColinFreiOpenBadgesPodcastBundle:Podcast');
-
-        $podcast = $podcastRepo->find($id);
+        $podcast = $this->getPodcastRepo()->find($id);
         if (!$podcast) {
             throw new NotFoundHttpException;
         }
@@ -28,5 +28,13 @@ class DefaultController extends Controller
         $serializer = $this->get('jms_serializer');
 
         return new Response($serializer->serialize($podcast, 'xml'), 200, array('Content-Type' => 'application/xml'));
+    }
+
+    /**
+     * @return PodcastRepository
+     */
+    private function getPodcastRepo()
+    {
+        return $this->get('doctrine.orm.entity_manager')->getRepository('ColinFreiOpenBadgesPodcastBundle:Podcast');
     }
 }

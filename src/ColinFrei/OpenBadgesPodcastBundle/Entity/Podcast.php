@@ -39,4 +39,14 @@ class Podcast
      * @Serializer\XmlList(entry="item")
      */
     private $items;
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
+    }
 }

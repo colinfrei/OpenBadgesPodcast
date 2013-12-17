@@ -7,6 +7,11 @@
 <h1>Open Badges weekly call podcasts</h1>
 Use the links below to add these podcasts to your favorite podcast players/apps.
 
+<ul>
+{% for podcast in podcasts %}
+    <li><a href="{{ path('colin_frei_openbadges_podcast_feed', {'id': podcast.id}) }}">{{ podcast.title }}</a></li>
+{% endfor %}
+</ul>
 
 </body>
 </html>
