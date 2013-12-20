@@ -5,6 +5,9 @@ namespace ColinFrei\OpenBadgesPodcastBundle\Entity;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
+ * This is not a persisted entity, it's just a helper for the serializer, since I couldn't
+ * figure out how to add an XML element with attributes in any other way.
+ *
  * @Serializer\XmlRoot("item")
  * @Serializer\ExclusionPolicy("all")
  */
@@ -19,7 +22,6 @@ class Enclosure
         $this->url = $url;
         $this->length = $length;
         $this->type = $type;
-
     }
 
     /**

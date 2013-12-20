@@ -6,7 +6,7 @@ use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * Initial setup of DB-tables, with default data for podcasts
  */
 class Version20131210210910 extends AbstractMigration
 {

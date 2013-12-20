@@ -42,12 +42,14 @@ class SpiderCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var PodcastItem[] $podcastItems */
         $podcastItems = $this->entityManager->getRepository('ColinFreiOpenBadgesPodcastBundle:PodcastItem')->findAll();
 
         $searchPage = $this->buzz->get($this->archiveOrgBase . '/search.php?query=subject%3A%22openbadges%22');
         $crawler = new Crawler($searchPage->getContent());
 
         $links = $crawler->filter('a.titleLink');
+        /** @var \DOMElement $link */
         foreach ($links as $link) {
             $hrefAttribute = $link->getAttribute('href');
             $this->logger->info('Processing link', array('link' => $hrefAttribute));

@@ -1,4 +1,5 @@
 <?php
+
 namespace ColinFrei\OpenBadgesPodcastBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;

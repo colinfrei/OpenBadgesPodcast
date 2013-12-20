@@ -4,8 +4,19 @@ namespace ColinFrei\OpenBadgesPodcastBundle;
 
 use JMS\Serializer\XmlSerializationVisitor;
 
+/**
+ * This overrides the JMS Serializer's XML Serialization Visitor in the config, and wraps the entire XML
+ * with an '<rss>' element
+ */
 class RssSerializationVisitor extends XmlSerializationVisitor
 {
+    /**
+     * Set here just to add a PHPDoc
+     *
+     * @var \DOMDocument
+     */
+    public $document;
+
     public function getResult()
     {
         // <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
