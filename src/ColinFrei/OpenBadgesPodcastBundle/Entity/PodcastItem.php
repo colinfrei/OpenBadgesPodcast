@@ -32,6 +32,7 @@ class PodcastItem
 
     /**
      * @ORM\Column(name="link", type="string")
+     * @Serializer\XmlElement(cdata=false)
      */
     private $link;
 
@@ -44,6 +45,7 @@ class PodcastItem
      * @ORM\Column(name="date", type="datetime")
      *
      * @Serializer\SerializedName("pubDate")
+     * @Serializer\XmlElement(cdata=false)
      */
     private $date;
 
@@ -60,6 +62,7 @@ class PodcastItem
      * @ORM\Column(name="file_url", type="string")
      *
      * @Serializer\SerializedName("guid")
+     * @Serializer\XmlElement(cdata=false)
      */
     private $fileUrl;
 
