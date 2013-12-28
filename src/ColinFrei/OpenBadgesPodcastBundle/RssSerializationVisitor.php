@@ -21,6 +21,13 @@ class RssSerializationVisitor extends XmlSerializationVisitor
     {
         // <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
 
+        $this->addRssElement();
+
+        return $this->document->saveXML();
+    }
+
+    private function addRssElement()
+    {
         $rootNode = $this->document->createElement("rss");
         $nsAttribute = $this->document->createAttribute('xmlns:itunes');
         $nsAttribute->value = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
@@ -32,7 +39,5 @@ class RssSerializationVisitor extends XmlSerializationVisitor
 
         $rootNode->appendChild($this->document->firstChild);
         $this->document->appendChild($rootNode);
-
-        return $this->document->saveXML();
     }
 }

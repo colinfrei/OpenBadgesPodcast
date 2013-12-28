@@ -9,13 +9,21 @@
     </parameters>
 
     <services>
-        <service id="colin_frei_openbadges_podcast.command.spider" class="ColinFrei\OpenBadgesPodcastBundle\Command\SpiderCommand">
+        <service id="colin_frei_openbadges_podcast.command.spider"
+                 class="ColinFrei\OpenBadgesPodcastBundle\Command\SpiderCommand">
             <argument type="service" id="buzz" />
             <argument type="service" id="serializer" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="logger" />
 
             <tag name="console.command" />
+        </service>
+
+        <service id="colin_frei_openbadges_podcast.add_podcast_link_event_subscriber"
+                 class="ColinFrei\OpenBadgesPodcastBundle\AddPodcastLinkEventSubscriber">
+            <argument type="service" id="router" />
+
+            <tag name="jms_serializer.event_subscriber" direction="serialization" />
         </service>
     </services>
 </container>

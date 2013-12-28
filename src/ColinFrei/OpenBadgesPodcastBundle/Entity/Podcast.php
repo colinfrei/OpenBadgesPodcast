@@ -34,6 +34,13 @@ class Podcast
     private $description;
 
     /**
+     * Not saved to DB, only used for output with Serializer
+     *
+     * @Serializer\XmlElement(cdata=false)
+     */
+    private $link;
+
+    /**
      * @ORM\OneToMany(targetEntity="PodcastItem", mappedBy="podcast")
      * @ORM\OrderBy({"date"="desc"})
      * @Serializer\Inline
@@ -49,5 +56,10 @@ class Podcast
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setLink($link)
+    {
+        $this->link = $link;
     }
 }
