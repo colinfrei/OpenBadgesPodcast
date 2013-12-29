@@ -6,7 +6,7 @@ found files as a podcast RSS feed.
 ##Installation
 * Checkout the Repo
 * Install the vendor scripts by running `composer install`
-* Copy `app/config/parameters.yml.dist` file to `app/config/parameters.yml` and adjust the values if necessary
+* Copy the `app/config/parameters.yml.dist` file to `app/config/parameters.yml` and adjust the values if necessary
 * Run `app/console doctrine:migrations:migrate`
 * Set up a cronjob to run `app/console colinfrei:openbadgespodcast:spider` regularly
 
