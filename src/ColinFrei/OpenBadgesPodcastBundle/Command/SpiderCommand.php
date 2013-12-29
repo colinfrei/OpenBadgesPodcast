@@ -91,12 +91,6 @@ class SpiderCommand extends Command
             }
         }
 
-        if ($this->isUrlAlreadyInDatabase($mediaItemUrl)) {
-            $this->logger->info('Skipping podcast item because already in DB', array('href' => $mediaItemUrl));
-
-            return;
-        }
-
         $this->addPodcastItem($mediaItemUrl, $podcastIdentifier);
     }
 
