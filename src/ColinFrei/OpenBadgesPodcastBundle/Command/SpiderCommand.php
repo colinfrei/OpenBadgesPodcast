@@ -160,31 +160,13 @@ class SpiderCommand extends Command
             switch ($fileData->format) {
                 case 'VBR MP3':
                     $podcast = $podcastRepository->findByIdentifierAndType($podcastIdentifier, 'mp3');
-                    $item = new PodcastItem(
-                        $mediaItem->metadata->title[0],
-                        $mediaItemUrl,
-                        $mediaItemDate,
-                        $fileUrl,
-                        $podcast
-                    );
-                    $item->setDuration($fileData->length);
-                    $item->setType(PodcastItem::TYPE_MP3);
-                    $item->setDescription($mediaItem->metadata->description[0]);
+                    $type = PodcastItem::TYPE_MP3;
 
                 break;
 
                 case 'Ogg Vorbis':
                     $podcast = $podcastRepository->findByIdentifierAndType($podcastIdentifier, 'ogg');
-                    $item = new PodcastItem(
-                        $mediaItem->metadata->title[0],
-                        $mediaItemUrl,
-                        $mediaItemDate,
-                        $fileUrl,
-                        $podcast
-                    );
-                    $item->setDuration($fileData->length);
-                    $item->setType(PodcastItem::TYPE_OGGVORBIS);
-                    $item->setDescription($mediaItem->metadata->description[0]);
+                    $type = PodcastItem::TYPE_OGGVORBIS;
 
                 break;
 
@@ -192,6 +174,17 @@ class SpiderCommand extends Command
                     // ignore
                     continue 2;
             }
+
+            $item = new PodcastItem(
+                $mediaItem->metadata->title[0],
+                $mediaItemUrl,
+                $mediaItemDate,
+                $fileUrl,
+                $podcast
+            );
+            $item->setDuration($fileData->length);
+            $item->setType($type);
+            $item->setDescription($mediaItem->metadata->description[0]);
 
             $this->entityManager->persist($item);
         }
