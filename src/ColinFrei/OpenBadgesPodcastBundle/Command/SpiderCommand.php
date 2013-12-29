@@ -23,6 +23,7 @@ class SpiderCommand extends Command
     private $logger;
 
     private $archiveOrgBase = 'https://archive.org';
+    private $podcastItems = null;
 
     public function __construct(Browser $buzz, SerializerInterface $serializer, EntityManager $entityManager, LoggerInterface $logger)
     {
@@ -44,63 +45,73 @@ class SpiderCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var PodcastItem[] $podcastItems */
-        $podcastItems = $this->entityManager->getRepository('ColinFreiOpenBadgesPodcastBundle:PodcastItem')->findAll();
-
         $searchPage = $this->buzz->get($this->archiveOrgBase . '/search.php?query=subject%3A%22openbadges%22');
         $crawler = new Crawler($searchPage->getContent());
 
         $links = $crawler->filter('a.titleLink');
-        /** @var \DOMElement $link */
         foreach ($links as $link) {
-            $hrefAttribute = $link->getAttribute('href');
-            $this->logger->info('Processing link', array('link' => $hrefAttribute));
-
-            $podcastIdentifier = $this->getIdentifierFromListItem($link);
-
-            $mediaItemUrl = $this->archiveOrgBase . $hrefAttribute;
-            if ($podcastIdentifier && $this->isUrlAlreadyInDatabase($podcastItems, $mediaItemUrl)) {
-                $this->logger->info('Skipping podcast item because already in DB', array('href' => $mediaItemUrl));
-
-                continue;
-            }
-
-            try {
-                $jsonMediaItemPage = $this->buzz->get($mediaItemUrl . '?output=json');
-            } catch (ClientException $exception) {
-                $this->logger->warning(
-                    'Got an Exception when fetching Media Item page',
-                    array('href' => $mediaItemUrl . '?output=json', 'exception' => $exception)
-                );
-
-                continue;
-            }
-
-            $mediaItem = json_decode($jsonMediaItemPage->getContent());
-
-            if (!$podcastIdentifier) {
-                $podcastIdentifier = $this->getIdentifierFromMediaItem($mediaItem);
-
-                if (!$podcastIdentifier) {
-                    $this->logger->info('Could not identify what podcast media item belongs to', (array) $mediaItem);
-
-                    continue;
-                }
-            }
-
-            $this->addPodcastItem($mediaItemUrl, $podcastIdentifier);
+            $this->handleMediaItemLink($link);
         }
     }
 
+    private function handleMediaItemLink(\DOMElement $link)
+    {
+        $hrefAttribute = $link->getAttribute('href');
+        $this->logger->info('Processing link', array('link' => $hrefAttribute));
+
+        $podcastIdentifier = $this->getIdentifierFromListItem($link);
+
+        $mediaItemUrl = $this->archiveOrgBase . $hrefAttribute;
+        if ($this->isUrlAlreadyInDatabase($mediaItemUrl)) {
+            $this->logger->info('Skipping podcast item because already in DB', array('href' => $mediaItemUrl));
+
+            return;
+        }
+
+        try {
+            $jsonMediaItemPage = $this->buzz->get($mediaItemUrl . '?output=json');
+        } catch (ClientException $exception) {
+            $this->logger->warning(
+                'Got an Exception when fetching Media Item page',
+                array('href' => $mediaItemUrl . '?output=json', 'exception' => $exception)
+            );
+
+            return;
+        }
+
+        $mediaItem = json_decode($jsonMediaItemPage->getContent());
+
+        if (!$podcastIdentifier) {
+            $podcastIdentifier = $this->getIdentifierFromMediaItem($mediaItem);
+
+            if (!$podcastIdentifier) {
+                $this->logger->info('Could not identify what podcast media item belongs to', (array) $mediaItem);
+
+                return;
+            }
+        }
+
+        if ($this->isUrlAlreadyInDatabase($mediaItemUrl)) {
+            $this->logger->info('Skipping podcast item because already in DB', array('href' => $mediaItemUrl));
+
+            return;
+        }
+
+        $this->addPodcastItem($mediaItemUrl, $podcastIdentifier);
+    }
+
     /**
-     * @param PodcastItem[] $podcastItems
      * @param string $mediaItemUrl
      *
      * @return bool
      */
-    private function isUrlAlreadyInDatabase(array $podcastItems, $mediaItemUrl)
+    private function isUrlAlreadyInDatabase($mediaItemUrl)
     {
-        foreach ($podcastItems as $podcastItem) {
+        if (null === $this->podcastItems) {
+            $this->podcastItems = $this->entityManager->getRepository('ColinFreiOpenBadgesPodcastBundle:PodcastItem')->findAll();
+        }
+
+        foreach ($this->podcastItems as $podcastItem) {
             if ($podcastItem->getLink() == $mediaItemUrl) {
                 // Assumption is that if it's in the DB then both file formats are in the db, so don't differentiate
 
