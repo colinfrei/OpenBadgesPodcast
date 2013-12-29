@@ -117,4 +117,9 @@ class PodcastItem
     {
         return $this->id;
     }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
 }

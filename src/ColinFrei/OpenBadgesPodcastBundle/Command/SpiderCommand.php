@@ -169,6 +169,8 @@ class SpiderCommand extends Command
                     );
                     $item->setDuration($fileData->length);
                     $item->setType(PodcastItem::TYPE_MP3);
+                    $item->setDescription($mediaItem->metadata->description[0]);
+
                 break;
 
                 case 'Ogg Vorbis':
@@ -182,6 +184,8 @@ class SpiderCommand extends Command
                     );
                     $item->setDuration($fileData->length);
                     $item->setType(PodcastItem::TYPE_OGGVORBIS);
+                    $item->setDescription($mediaItem->metadata->description[0]);
+
                 break;
 
                 default:
