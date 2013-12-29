@@ -1,7 +1,7 @@
 #Openbadges Podcast
 
-This is a Symfony app that spiders the archive.org Site for media files tagged with 'openbadges' and serves up the
-found files as a Podcast RSS feed.
+This is a Symfony app that spiders the archive.org site for media files tagged with 'openbadges' and serves up the
+found files as a podcast RSS feed.
 
 ##Installation
 * Checkout the Repo
