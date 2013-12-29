@@ -3,6 +3,8 @@
 namespace ColinFrei\OpenBadgesPodcastBundle\Command;
 
 use Buzz\Browser;
+use Buzz\Exception\ClientException;
+use ColinFrei\OpenBadgesPodcastBundle\Entity\Podcast;
 use ColinFrei\OpenBadgesPodcastBundle\Entity\PodcastItem;
 use ColinFrei\OpenBadgesPodcastBundle\Entity\PodcastRepository;
 use Doctrine\ORM\EntityManager;
@@ -54,31 +56,92 @@ class SpiderCommand extends Command
             $hrefAttribute = $link->getAttribute('href');
             $this->logger->info('Processing link', array('link' => $hrefAttribute));
 
-            $linkTitle = $link->textContent;
-            $podcastIdentifier = strtolower(substr($linkTitle, 0, 3));
-            if (!in_array($podcastIdentifier, array('obi', 'rsd'))) {
-                $this->logger->debug(
-                    'Skipping link, not in list of identifiers we\'re interested in',
-                    array('link' => $hrefAttribute, 'identifier' => $podcastIdentifier, 'title' => $linkTitle)
-                );
+            $podcastIdentifier = $this->getIdentifierFromListItem($link);
+
+            $mediaItemUrl = $this->archiveOrgBase . $hrefAttribute;
+            if ($podcastIdentifier && $this->isUrlAlreadyInDatabase($podcastItems, $mediaItemUrl)) {
+                $this->logger->info('Skipping podcast item because already in DB', array('href' => $mediaItemUrl));
+
                 continue;
             }
 
-            $mediaItemUrl = $this->archiveOrgBase . $hrefAttribute;
-            foreach ($podcastItems as $podcastItem) {
-                if ($podcastItem->getLink() == $mediaItemUrl) {
-                    // Assumption is that if it's in the DB then both file formats are in the db, so don't differentiate
-                    $this->logger->debug(
-                        'Skipping link, already in db',
-                        array('link' => $hrefAttribute, 'dbItemId' => $podcastItem->getId())
-                    );
+            try {
+                $jsonMediaItemPage = $this->buzz->get($mediaItemUrl . '?output=json');
+            } catch (ClientException $exception) {
+                $this->logger->warning(
+                    'Got an Exception when fetching Media Item page',
+                    array('href' => $mediaItemUrl . '?output=json', 'exception' => $exception)
+                );
 
-                    continue 2;
+                continue;
+            }
+
+            $mediaItem = json_decode($jsonMediaItemPage->getContent());
+
+            if (!$podcastIdentifier) {
+                $podcastIdentifier = $this->getIdentifierFromMediaItem($mediaItem);
+
+                if (!$podcastIdentifier) {
+                    $this->logger->info('Could not identify what podcast media item belongs to', (array) $mediaItem);
+
+                    continue;
                 }
             }
 
             $this->addPodcastItem($mediaItemUrl, $podcastIdentifier);
         }
+    }
+
+    /**
+     * @param PodcastItem[] $podcastItems
+     * @param string $mediaItemUrl
+     *
+     * @return bool
+     */
+    private function isUrlAlreadyInDatabase(array $podcastItems, $mediaItemUrl)
+    {
+        foreach ($podcastItems as $podcastItem) {
+            if ($podcastItem->getLink() == $mediaItemUrl) {
+                // Assumption is that if it's in the DB then both file formats are in the db, so don't differentiate
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function getIdentifierFromListItem(\DOMElement $link)
+    {
+        $prefix = strtolower(substr($link->textContent, 0, 3));
+        switch ($prefix) {
+            case 'obi':
+                return Podcast::IDENTIFIER_COMMUNITY_CALL;
+            break;
+
+            case 'rsd':
+            case 'rbsd':
+                return Podcast::IDENTIFIER_RESEARCH_CALL;
+            break;
+
+            default:
+                return '';
+        }
+    }
+
+    private function getIdentifierFromMediaItem(\stdClass $mediaItem)
+    {
+        $description = $mediaItem->metadata->description[0];
+
+        if (false !== strpos($description, 'Research & Badge System Design Call')) {
+            return Podcast::IDENTIFIER_RESEARCH_CALL;
+        }
+
+        if (false !== strpos($description, 'Community Call')) {
+            return Podcast::IDENTIFIER_COMMUNITY_CALL;
+        }
+
+        return '';
     }
 
     private function addPodcastItem($mediaItemUrl, $podcastIdentifier)

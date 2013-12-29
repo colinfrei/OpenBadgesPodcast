@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityRepository;
 class PodcastRepository extends EntityRepository
 {
     /**
-     * @param string $identifier The identifier of the podcast (currently obi or rsd)
+     * @param string $identifier The identifier of the podcast (one of the 'IDENTIFIER' constants in the 'Podcast' class
      * @param string $fileType The filetype of the podcast (currently mp3 or ogg)
      *
      * @return null|object

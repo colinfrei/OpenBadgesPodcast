@@ -13,6 +13,9 @@ use JMS\Serializer\Annotation as Serializer;
  */
 class Podcast
 {
+    const IDENTIFIER_COMMUNITY_CALL = 'comm';
+    const IDENTIFIER_RESEARCH_CALL = 'rbsd';
+
     /**
      * Manually set ID
      *
