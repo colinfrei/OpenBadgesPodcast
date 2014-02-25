@@ -24,7 +24,7 @@
         "jms/serializer": "0.14.*@dev",
         "doctrine/doctrine-migrations-bundle": "2.1.x-dev",
         "twbs/bootstrap": "~3.1",
-        "symfony/icu": "1.1.*"
+        "symfony/icu": "1.0.*"
     },
     "scripts": {
         "post-install-cmd": [
