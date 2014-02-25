@@ -10,4 +10,4 @@ parameters:
     mailer_password:   ~
 
     locale:            en
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    secret:            2E8AE9410CF09F2A862677F55E97D542721B7041EABEE6AAE206E0394A9A843F
